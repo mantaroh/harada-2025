@@ -71,7 +71,7 @@ body {
     text-align: center;
   }
   .open {
-    background: #e6e6e6;
+    background: #b6ff00;
     animation: fadein 0.7s;
   }
   .flag::before {
