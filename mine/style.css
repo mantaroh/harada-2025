@@ -71,7 +71,7 @@ body {
     text-align: center;
   }
   .open {
-    background: #e6e6e6;
+    background: #c3ca3e;
     animation: fadein 0.7s;
   }
   .flag::before {
@@ -80,7 +80,7 @@ body {
     animation: fadein 0.3s;
   }
   .bomb {
-    background: red;
+    background: rgb(159, 32, 227);
     animation: fadein 1s infinite;
   }
   .bomb::before {
