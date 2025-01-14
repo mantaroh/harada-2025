@@ -3,7 +3,7 @@ body {
       "Hiragino Sans", Meiryo, sans-serif;
   }
   main {
-    margin-top: 20px;
+    margin-top: 20px;     
   }
   
   /* setting */
@@ -61,17 +61,17 @@ body {
   #board {
     margin: 0 auto;
     border-collapse: collapse;
-    background: yellowgreen;
+    background: rgba(40, 7, 228, 0.815);
   }
   td {
-    border: solid 3px white;
+    border: solid 3px rgb(245, 241, 241);
     width: 30px;
     height: 30px;
     font-weight: bold;
     text-align: center;
   }
   .open {
-    background: #b6ff00;
+    background: #00ff00;
     animation: fadein 0.7s;
   }
   .flag::before {
