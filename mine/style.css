@@ -61,7 +61,7 @@ body {
   #board {
     margin: 0 auto;
     border-collapse: collapse;
-    background: yellowgreen;
+    background: rgb(250, 246, 3);
   }
   td {
     border: solid 3px white;
@@ -80,7 +80,7 @@ body {
     animation: fadein 0.3s;
   }
   .bomb {
-    background: red;
+    background: rgb(68, 0, 255);
     animation: fadein 1s infinite;
   }
   .bomb::before {
