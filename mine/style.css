@@ -19,7 +19,7 @@ body {
     border-radius: 5px;
   }
   #text h1 {
-    color: yellowgreen;
+    color: rgb(216, 0, 101);
     margin: 0;
   }
   #text h3 {
@@ -61,7 +61,7 @@ body {
   #board {
     margin: 0 auto;
     border-collapse: collapse;
-    background: yellowgreen;
+    background: rgb(255, 251, 0);
   }
   td {
     border: solid 3px white;
@@ -80,7 +80,7 @@ body {
     animation: fadein 0.3s;
   }
   .bomb {
-    background: red;
+    background: rgb(117, 8, 206);
     animation: fadein 1s infinite;
   }
   .bomb::before {
