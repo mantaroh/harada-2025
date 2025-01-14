@@ -71,7 +71,8 @@ body {
     text-align: center;
   }
   .open {
-    background: #0117db7c;
+
+    background: olivedrab;
     animation: fadein 0.7s;
   }
   .flag::before {
@@ -79,8 +80,8 @@ body {
     content: "\e153";
     animation: fadein 0.3s;
   }
-  .bomb {
-    background: rgb(15, 64, 110);
+    background: tomato;
+
     animation: fadein 1s infinite;
   }
   .bomb::before {
