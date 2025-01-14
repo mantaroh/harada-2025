@@ -80,7 +80,7 @@ body {
     animation: fadein 0.3s;
   }
   .bomb {
-    background: tomato;
+    background: red;
     animation: fadein 1s infinite;
   }
   .bomb::before {
