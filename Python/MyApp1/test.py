@@ -6,7 +6,7 @@ eye_cascade_path = cv2.data.haarcascades + 'haarcascade_eye_tree_eyeglasses.xml'
 
 cap = cv2.VideoCapture( 0 ) 
 cascade = cv2.CascadeClassifier(cascade_path)
-eye_cascade = cv2.CascadeClassifier(eye_cascade_path)
+eye_cascade = cv2.CascadeClassifier(eye_cascade_path) #ここを変更
 print("こんにちは")
 while True:
     ret, rgb = cap.read()
