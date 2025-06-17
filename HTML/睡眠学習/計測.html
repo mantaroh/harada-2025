@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>計測</title>
+  <link rel="stylesheet" href="計測.css">
+</head>
+<body>
+  <div class="container">
+
+    <!-- ステータス表示：充電案内と画面OFFボタン -->
+    <div class="status-box">
+      <img src="Fi334J0UcAA-Sgq.png" alt="充電アイコン" class="status-icon">
+      <span class="status-text">端末への充電を十分にしてください。</span>
+      <button class="btn screen-off">画面OFF</button>
+    </div>
+
+    <!-- 上部：リアルタイム時計 -->
+    <div id="clock" class="clock">00:00</div>
+
+    <!-- 下部：スワイプ操作 -->
+    <div id="sliderContainer" class="slider-container">
+      <img src="Fi334J1VUAAvqTq.png" alt="ゴール" class="slider-goal">
+      <img src="Fi34YRUUYAEJ_wK.png" alt="スタート" id="sliderHandle" class="slider-handle">
+    </div>
+  </div>
+
+  <script>
+    // 時計の更新
+    function updateClock() {
+      const now = new Date();
+      const hh = String(now.getHours()).padStart(2,'0');
+      const mm = String(now.getMinutes()).padStart(2,'0');
+      document.getElementById('clock').textContent = hh + ':' + mm;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    // スワイプでページ遷移
+    (function(){
+      const handle = document.getElementById('sliderHandle');
+      const container = document.getElementById('sliderContainer');
+      let dragging = false, startX = 0, origLeft = 0;
+      const goalX = container.clientWidth - handle.clientWidth - 8; // 余白考慮
+
+      handle.addEventListener('pointerdown', e => {
+        dragging = true;
+        startX = e.clientX;
+        origLeft = handle.offsetLeft;
+        handle.setPointerCapture(e.pointerId);
+      });
+      handle.addEventListener('pointermove', e => {
+        if(!dragging) return;
+        let dx = e.clientX - startX;
+        let newLeft = Math.min(Math.max(origLeft + dx, 0), goalX);
+        handle.style.left = newLeft + 'px';
+        if(newLeft >= goalX) {
+          // 遷移
+          window.location.href = '../0424 - コピー/index - コピー.html';
+        }
+      });
+      handle.addEventListener('pointerup', e => {
+        dragging = false;
+        // 戻す場合は以下コメントアウト解除
+        // handle.style.left = '4px';
+      });
+    })();
+  </script>
+</body>
+</html>

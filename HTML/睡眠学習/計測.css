@@ -1,0 +1,96 @@
+/* 全体背景 */
+body {
+  margin: 0;
+  height: 100vh;
+  background: url('スライム.gif') center/cover no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* コンテンツ中央揃え */
+.container {
+  width: 100%;
+  max-width: 360px;
+  padding: 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+/* 時計 */
+.clock {
+  font-size: 48px;
+  color: #000;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+  margin-top: 40px;
+}
+
+/* スライダーコンテナ */
+.slider-container {
+  position: relative;
+  height: 60px;
+  /* 旧 background を下に移動し、新しい背景画像を先に指定 */
+  background: url('あ.png') center/cover no-repeat,
+              rgba(255,255,255,0.6);
+  border: 2px solid #000;
+  border-radius: 30px;
+  margin-bottom: 40px;
+  touch-action: none;
+}
+
+/* ゴールアイコン（右端） */
+.slider-goal {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 44px;
+  user-select: none;
+}
+
+/* スタートハンドル（ドラッグ可能） */
+.slider-handle {
+  position: absolute;
+  left: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 44px;
+  cursor: grab;
+  user-select: none;
+}
+
+/* ステータスボックス */
+.status-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255,255,255,0.8);
+  border: 2px solid #000;
+  padding: 12px 16px;  /* もとの 8px → 12px に調整 */
+  margin-bottom: 20px;  /* 下余白を少し広げ */
+  border-radius: 6px;   /* 角をほんの少し丸く */
+}
+.status-icon {
+  width: 24px;
+  height: auto;
+  margin-right: 8px;
+}
+.status-text {
+  flex: 1;
+  font-size: 16px;      /* もとの 14px → 16px に調整 */
+  color: #000;
+  margin-right: 8px;
+}
+.btn.screen-off {
+  background: #333;
+  color: #fff;
+  border: 2px solid #000;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: pointer;
+  border-radius: 2px;
+}

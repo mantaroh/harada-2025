@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>おやすみ記録</title>
+  <style>
+  body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #88aaff;
+  font-family: sans-serif;
+}
+.window {
+  width: 360px;
+  background: #e0e8ff;
+  border: 3px solid #000;
+  padding: 8px;
+  position: relative;
+}
+
+/* ヘッダー */
+.window-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.sprite {
+  width: 64px;
+  height: auto;
+  object-fit: contain;
+}
+.speech-box {
+  background: #000;
+  color: #fff;
+  font-size: 12px;
+  padding: 4px 6px;
+  margin-left: 6px;
+  border: 2px solid #fff;
+}
+
+/* セクション共通 */
+.section {
+  margin-bottom: 10px;
+}
+.section h2 {
+  background: #aac0ff;
+  color: #000;
+  font-size: 14px;
+  margin: 0 0 4px;
+  padding: 4px;
+  text-align: center;
+  border: 2px solid #000;
+}
+.chart-img {
+  width: 100%;
+  height: auto;
+  border: 2px dashed #000;
+  background: #fff;
+}
+.no-data, .average {
+  text-align: center;
+  font-size: 12px;
+  margin: 4px 0;
+}
+
+/* ボタン */
+.btn {
+  display: block;
+  width: 100%;
+  padding: 6px;
+  margin: 4px 0;
+  font-size: 14px;
+  background: #fff;
+  border: 2px solid #000;
+  cursor: pointer;
+}
+.btn.close {
+  width: 80px;
+  margin: 8px 0 0;  /* 上余白8px、左右は親のalign-itemsで中央 */
+}
+
+/* 「アラーム設定」部分のボタンを四角で囲う */
+.alarm-buttons {
+  border: 2px solid #000;
+  padding: 6px;
+  display: flex;
+  gap: 8px;
+  background: #dde8ff;
+  margin-top: 4px;
+}
+
+.alarm-buttons .btn {
+  flex: 1;       /* ボタンを均等幅に */
+  margin: 0;     /* 外側余白をリセット */
+}
+
+/* 見出しをバナー風に */
+.section.mode h2 {
+  background: #6464a0;
+  color: #fff;
+  font-size: 14px;
+  padding: 6px 12px;
+  text-align: center;
+  border: 2px solid #000;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+/* 左テキストと右ボタンを横並びに */
+.section.mode .mode-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* 左の説明文 */
+.section.mode .mode-text {
+  width: 65%;
+  font-size: 12px;
+  line-height: 1.4;
+  color: #0044cc;
+  margin: 0;
+}
+
+/* 右のボタン */
+.section.mode .mode-toggle {
+  width: 30%;
+  padding: 8px;
+  background: #80c0ff;
+  border: 2px solid #0044cc;
+  color: #0044cc;
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1.4;
+}
+
+/* ─ nav ボタン横並び（TOP と おやすむ） */
+.section.nav {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.section.nav .btn {
+  flex: 1;
+  margin: 0;
+}
+/* TOP ボタン */
+.section.nav .btn.top {
+  background: #ffe066;
+  border-color: #b38f00;
+}
+/* おやすむボタン */
+.section.nav .btn.sleep {
+  background: #4f9aff;
+  border-color: #005ce6;
+  color: #fff;
+}
+
+/* nav と mode の間の仕切り線 */
+.divider {
+  border: none;
+  height: 2px;
+  background: #000;
+  margin: 12px 0;
+}
+
+/* ダイアログ全体を上下に並べて中央寄せ */
+.dialog {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* 必要なら高さ調整 */
+
+}
+</style>
+
+
+</head>
+<body>
+  <!-- .window と .btn.close をまとめてセンタリング -->
+  <div class="dialog">
+    <div class="window">
+      <div class="window-header">
+        <img src="grp/show.png" alt="スライム" class="sprite">
+        <div class="speech-box">「ぷるぷる……いっぱいやすんでね。」</div>
+      </div>
+
+      <section class="section chart">
+        <h2>最近のおやすみ時間</h2>
+        <img src="GRP/2025-06-03_110601.png" alt="おやすみグラフ" class="chart-img">
+        <p class="no-data">おやすみデータがありません。</p>
+        <p class="average">平均おやすみ時間 — 時間 — 分</p>
+      </section>
+
+      <section class="section alarm">
+        <h2>アラーム設定</h2>
+        <div class="alarm-buttons">
+          <button class="btn alarm-set">未設定</button>
+          <button class="btn alarm-toggle">アラーム OFF</button>
+        </div>
+      </section>
+
+      <section class="section mode">
+        <h2>こだわりモード</h2>
+        <div class="mode-content">
+          <p class="mode-text">
+            設定をONにすることで<br>
+            睡眠の深さや入眠までにかかった時間を確認できます。
+          </p>
+          <button class="btn mode-toggle">
+            こだわり<br>モード ON
+          </button>
+        </div>
+      </section>  <!-- /.section.mode -->
+
+      <!-- mode と nav の間に仕切りを追加 -->
+      <hr class="divider">
+
+      <section class="section nav">
+        <button class="btn top">TOP</button>
+        <button class="btn sleep">おやすむ</button>
+      </section>
+    </div>
+    <!-- メインメニュー（.window）の真下に配置 -->
+    <button class="btn close">とじる</button>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

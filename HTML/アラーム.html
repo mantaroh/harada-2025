@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>YouTubeアラーム</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      max-width: 500px;
+      margin: auto;
+      text-align: center;
+    }
+    #dateTimeDisplay {
+      font-size: 12px;
+      color: gray;
+      margin-bottom: 5px;
+    }
+    #currentTimeDisplay {
+      font-size: 90px;
+      font-weight: bold;
+      margin-bottom: 30px;
+      cursor: pointer;
+    }
+    .sliders-container {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+    .slider-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    input[type=range] {
+      writing-mode: bt-lr;
+      -webkit-appearance: slider-vertical;
+      height: 140px;
+    }
+    .value-display {
+      font-size: 20px;
+      margin-top: 6px;
+    }
+    input[type=text], select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 10px;
+    }
+    button {
+      padding: 8px 12px;
+      margin-top: 10px;
+    }
+    iframe {
+      margin-top: 15px;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+    }
+    #alarmHistory li {
+      margin: 5px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f0f0f0;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    #alarmHistory button {
+      padding: 2px 6px;
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="dateTimeDisplay"></div>
+<div id="currentTimeDisplay">12:00</div>
+
+<div class="sliders-container">
+  <div class="slider-container">
+    <label>時間</label>
+    <input type="range" id="hourRange" min="0" max="23" value="12" />
+    <div class="value-display" id="hourValue">12</div>
+  </div>
+  <div class="slider-container">
+    <label>分</label>
+    <input type="range" id="minuteRange" min="0" max="59" value="0" />
+    <div class="value-display" id="minuteValue">00</div>
+  </div>
+</div>
+
+<div style="margin-top: 30px;">
+  <label for="youtubeName">動画の名前</label>
+  <input type="text" id="youtubeName" placeholder="例: 朝の目覚まし" />
+
+  <label for="youtubeUrl">YouTube動画リンク</label>
+  <input type="text" id="youtubeUrl" placeholder="https://www.youtube.com/watch?v=xxxxxx" />
+
+  <button id="addToListBtn">保存</button>
+
+  <div style="margin-top: 15px;">
+    <label for="videoSelect">アラーム動画を選ぶ</label>
+    <select id="videoSelect">
+      <option value="">-- リストから選択 --</option>
+    </select>
+
+    <button id="deleteVideoBtn" style="margin-top: 5px;">選択した動画を削除</button>
+  </div>
+</div>
+
+<button id="setAlarmBtn">アラームをセット</button>
+
+<div id="videoContainer" style="display:none;">
+  <iframe id="youtubePlayer" src="" frameborder="0" allow="autoplay" allowfullscreen></iframe>
+</div>
+
+<h3>アラーム履歴</h3>
+<ul id="alarmHistory" style="text-align: left; font-size: 14px; list-style: none; padding: 0;"></ul>
+
+<script>
+  const hourRange = document.getElementById("hourRange");
+  const minuteRange = document.getElementById("minuteRange");
+  const hourValue = document.getElementById("hourValue");
+  const minuteValue = document.getElementById("minuteValue");
+  const currentTimeDisplay = document.getElementById("currentTimeDisplay");
+  const dateTimeDisplay = document.getElementById("dateTimeDisplay");
+  const youtubeNameInput = document.getElementById("youtubeName");
+  const youtubeUrlInput = document.getElementById("youtubeUrl");
+  const addToListBtn = document.getElementById("addToListBtn");
+  const videoSelect = document.getElementById("videoSelect");
+  const deleteVideoBtn = document.getElementById("deleteVideoBtn");
+  const setAlarmBtn = document.getElementById("setAlarmBtn");
+  const videoContainer = document.getElementById("videoContainer");
+  const youtubePlayer = document.getElementById("youtubePlayer");
+  const alarmHistoryListElement = document.getElementById("alarmHistory");
+
+  let alarmTime = null;
+  let alarmVideoID = null;
+  let videoList = [];
+  let alarmHistoryList = [];
+
+  function pad(n) {
+    return n.toString().padStart(2, "0");
+  }
+
+  function updateTimeDisplay() {
+    const h = pad(hourRange.value);
+    const m = pad(minuteRange.value);
+    hourValue.textContent = h;
+    minuteValue.textContent = m;
+    currentTimeDisplay.textContent = `${h}:${m}`;
+  }
+
+  function updateDateTime() {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth() + 1;
+    const date = now.getDate();
+    const dayNames = ['日', '月', '火', '水', '木', '金', '土'];
+    const day = dayNames[now.getDay()];
+    const hours = pad(now.getHours());
+    const minutes = pad(now.getMinutes());
+    const seconds = pad(now.getSeconds());
+    const dateTimeStr = `${year}年${month}月${date}日(${day}) ${hours}:${minutes}:${seconds}`;
+    dateTimeDisplay.textContent = dateTimeStr;
+  }
+
+  function extractYouTubeID(url) {
+    const match = url.match(/(?:v=|youtu\.be\/)([^&]+)/);
+    return match ? match[1] : null;
+  }
+
+  function saveToLocalStorage() {
+    localStorage.setItem("videoList", JSON.stringify(videoList));
+  }
+
+  function loadFromLocalStorage() {
+    const stored = localStorage.getItem("videoList");
+    if (stored) {
+      videoList = JSON.parse(stored);
+      refreshVideoSelect();
+    }
+  }
+
+  function saveAlarmHistory() {
+    localStorage.setItem("alarmHistory", JSON.stringify(alarmHistoryList));
+  }
+
+  function loadAlarmHistory() {
+    const stored = localStorage.getItem("alarmHistory");
+    if (stored) {
+      alarmHistoryList = JSON.parse(stored);
+      refreshAlarmHistory();
+    }
+  }
+
+  function addOptionToSelect(id, url, name) {
+    const option = document.createElement("option");
+    option.value = id;
+    option.textContent = `${name}（${url}）`;
+    videoSelect.appendChild(option);
+  }
+
+  function refreshVideoSelect() {
+    videoSelect.innerHTML = `<option value="">-- リストから選択 --</option>`;
+    videoList.forEach(video => {
+      addOptionToSelect(video.id, video.url, video.name);
+    });
+  }
+
+  function refreshAlarmHistory() {
+    alarmHistoryListElement.innerHTML = "";
+    alarmHistoryList.slice().reverse().forEach((entry, index) => {
+      const li = document.createElement("li");
+      li.innerHTML = `⏰ ${entry.time} - ${entry.name} <button data-index="${index}">削除</button>`;
+      li.addEventListener("click", (e) => {
+        if (e.target.tagName === "BUTTON") return;
+        const [h, m] = entry.time.split(":");
+        hourRange.value = parseInt(h);
+        minuteRange.value = parseInt(m);
+        updateTimeDisplay();
+        const matchedVideo = videoList.find(v => v.name === entry.name);
+        if (matchedVideo) {
+          videoSelect.value = matchedVideo.id;
+        }
+        alert(`アラーム ${entry.time} を再設定しました`);
+      });
+      alarmHistoryListElement.appendChild(li);
+    });
+
+    document.querySelectorAll("#alarmHistory button").forEach(btn => {
+      btn.addEventListener("click", (e) => {
+        const idx = alarmHistoryList.length - 1 - Number(e.target.dataset.index);
+        alarmHistoryList.splice(idx, 1);
+        saveAlarmHistory();
+        refreshAlarmHistory();
+      });
+    });
+  }
+
+  function addToVideoList(url, name) {
+    const id = extractYouTubeID(url);
+    if (!id) return alert("有効なYouTubeリンクではありません。");
+    if (!name) return alert("動画に名前をつけてください。");
+    if (videoList.some(v => v.id === id)) return alert("この動画はすでに保存されています。");
+
+    const displayUrl = `https://youtu.be/${id}`;
+    videoList.push({ id, url: displayUrl, name: name.trim() });
+    saveToLocalStorage();
+    refreshVideoSelect();
+    youtubeUrlInput.value = "";
+    youtubeNameInput.value = "";
+  }
+
+  addToListBtn.addEventListener("click", () => {
+    const url = youtubeUrlInput.value.trim();
+    const name = youtubeNameInput.value.trim();
+    if (url && name) addToVideoList(url, name);
+  });
+
+  deleteVideoBtn.addEventListener("click", () => {
+    const selectedID = videoSelect.value;
+    if (!selectedID) return alert("削除する動画を選んでください。");
+    if (!confirm("この動画をリストから削除しますか？")) return;
+
+    videoList = videoList.filter(v => v.id !== selectedID);
+    saveToLocalStorage();
+    refreshVideoSelect();
+    alert("削除しました！");
+  });
+
+  setAlarmBtn.addEventListener("click", () => {
+    const h = pad(hourRange.value);
+    const m = pad(minuteRange.value);
+    const selectedID = videoSelect.value;
+    if (!selectedID) return alert("アラーム動画をリストから選んでください。");
+    alarmTime = `${h}:${m}`;
+    alarmVideoID = selectedID;
+    const videoName = videoSelect.selectedOptions[0].textContent.split("（")[0];
+    alarmHistoryList.push({ time: alarmTime, name: videoName });
+    saveAlarmHistory();
+    refreshAlarmHistory();
+    alert(`アラームを ${alarmTime} にセットしました`);
+  });
+
+  setInterval(() => {
+    const now = new Date();
+    const hh = pad(now.getHours());
+    const mm = pad(now.getMinutes());
+    const current = `${hh}:${mm}`;
+    if (alarmTime && current === alarmTime) {
+      videoContainer.style.display = "block";
+      youtubePlayer.src = `https://www.youtube.com/embed/${alarmVideoID}?autoplay=1`;
+      alarmTime = null;
+    }
+    updateDateTime();
+  }, 1000);
+
+  currentTimeDisplay.addEventListener("click", () => {
+    const time = prompt("アラーム時間を HH:MM 形式で入力してください", currentTimeDisplay.textContent);
+    if (time && /^\d{1,2}:\d{2}$/.test(time)) {
+      const [h, m] = time.split(":").map(Number);
+      if (h >= 0 && h <= 23 && m >= 0 && m <= 59) {
+        hourRange.value = h;
+        minuteRange.value = m;
+        updateTimeDisplay();
+      }
+    }
+  });
+
+  hourRange.addEventListener("input", updateTimeDisplay);
+  minuteRange.addEventListener("input", updateTimeDisplay);
+  updateTimeDisplay();
+  loadFromLocalStorage();
+  loadAlarmHistory();
+  updateDateTime();
+</script>
+
+</body>
+</html>
