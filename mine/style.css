@@ -61,7 +61,7 @@ body {
   #board {
     margin: 0 auto;
     border-collapse: collapse;
-    background: yellowgreen;
+    background: rgb(255, 208, 0);
   }
   td {
     border: solid 3px white;
@@ -71,6 +71,7 @@ body {
     text-align: center;
   }
   .open {
+
     background: olivedrab;
     animation: fadein 0.7s;
   }
@@ -79,8 +80,8 @@ body {
     content: "\e153";
     animation: fadein 0.3s;
   }
-  .bomb {
     background: tomato;
+
     animation: fadein 1s infinite;
   }
   .bomb::before {
